@@ -59,16 +59,9 @@ test('storage and messaging layer', () => {
   });
 
   template.resourceCountIs('AWS::SNS::Topic', 1);
-  template.hasResourceProperties('AWS::SNS::Topic', {
-    TopicName: 'textract-completion',
-  });
 
   template.resourceCountIs('AWS::SQS::Queue', 2);
   template.hasResourceProperties('AWS::SQS::Queue', {
-    QueueName: 'process-dlq',
-  });
-  template.hasResourceProperties('AWS::SQS::Queue', {
-    QueueName: 'process-queue',
     VisibilityTimeout: 90,
     RedrivePolicy: {
       deadLetterTargetArn: Match.anyValue(),

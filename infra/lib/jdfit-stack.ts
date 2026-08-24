@@ -31,17 +31,13 @@ export class JDFitStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const textractCompletion = new sns.Topic(this, 'TextractCompletion', {
-      topicName: 'textract-completion',
-    });
+    const textractCompletion = new sns.Topic(this, 'TextractCompletion');
 
     const processDlq = new sqs.Queue(this, 'ProcessDlq', {
-      queueName: 'process-dlq',
       removalPolicy: cdk.RemovalPolicy.DESTROY, //added
     });
 
     const processQueue = new sqs.Queue(this, 'ProcessQueue', {
-      queueName: 'process-queue',
       visibilityTimeout: cdk.Duration.seconds(90),
       removalPolicy: cdk.RemovalPolicy.DESTROY, //added
       deadLetterQueue: {
