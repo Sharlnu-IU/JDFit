@@ -15,6 +15,7 @@
     "pdf-parse": "^2.4.5"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.162",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/multer": "^2.2.0",
