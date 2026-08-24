@@ -6,3 +6,4 @@ uploads/
 PRD.md
 LOCALSTACK_AUTH_TOKEN
 .DS_Store
+/private
