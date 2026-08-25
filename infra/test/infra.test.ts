@@ -73,6 +73,58 @@ test('storage and messaging layer', () => {
     Protocol: 'sqs',
   });
 
-  template.resourceCountIs('AWS::ApiGateway::RestApi', 0);
+  template.resourceCountIs('AWS::ApiGateway::RestApi', 1);
+  template.hasResourceProperties('AWS::ApiGateway::RestApi', {
+    Name: 'jdfit-api',
+  });
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'textract.amazonaws.com' },
+        }),
+      ]),
+    },
+  });
+  template.hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs24.x',
+    Timeout: 30,
+    Environment: {
+      Variables: {
+        APP_ENV: 'prod',
+        TABLE_RESUMES: Match.anyValue(),
+        TABLE_ANALYSES: Match.anyValue(),
+        BUCKET_NAME: Match.anyValue(),
+        SNS_TOPIC_ARN: Match.anyValue(),
+        TEXTRACT_ROLE_ARN: Match.anyValue(),
+      },
+    },
+  });
+  template.hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs24.x',
+    Timeout: 60,
+  });
+  template.hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+    BatchSize: 1,
+  });
+  template.hasResourceProperties('Custom::S3BucketNotifications', {
+    NotificationConfiguration: {
+      LambdaFunctionConfigurations: Match.arrayWith([
+        Match.objectLike({
+          Events: ['s3:ObjectCreated:*'],
+          Filter: {
+            Key: {
+              FilterRules: Match.arrayWith([
+                { Name: 'suffix', Value: '.pdf' },
+              ]),
+            },
+          },
+        }),
+      ]),
+    },
+  });
+
   template.resourceCountIs('AWS::Cognito::UserPool', 0);
 });
